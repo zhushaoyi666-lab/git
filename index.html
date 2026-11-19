@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="南枝食集，来自岭南的当代表达。预约你的下一顿好饭。" />
+    <title>南枝食集 · 南方风物，当代表达</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@500;600;700;900&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --ink: #183b37;
+        --ink-soft: #41645e;
+        --cream: #f7f3e9;
+        --paper: #fffdf7;
+        --lime: #d9e768;
+        --coral: #e8735c;
+        --line: rgba(24, 59, 55, 0.16);
+        --mono: "DM Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+        --sans: "Manrope", "Noto Sans SC", system-ui, sans-serif;
+        --serif: "Noto Serif SC", Georgia, serif;
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: var(--cream);
+        font-family: var(--sans);
+        line-height: 1.5;
+      }
+      body.modal-open { overflow: hidden; }
+      button, input, select { font: inherit; }
+      button { cursor: pointer; }
+      a { color: inherit; text-decoration: none; }
+      img { display: block; max-width: 100%; }
+
+      .site-header {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        left: 0;
+        width: 100%;
+        color: #fffdf7;
+      }
+      .nav {
+        width: min(1260px, calc(100% - 72px));
+        height: 86px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(255, 253, 247, .32);
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-family: var(--serif);
+        font-size: 22px;
+        letter-spacing: .05em;
+        font-weight: 700;
+      }
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        display: grid;
+        place-items: center;
+        border: 1px solid currentColor;
+        border-radius: 50%;
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0;
+      }
+      .nav-links { display: flex; align-items: center; gap: 34px; font-size: 13px; }
+      .nav-links a { opacity: .86; transition: opacity .2s ease; }
+      .nav-links a:hover { opacity: 1; }
+      .nav-actions { display: flex; align-items: center; gap: 16px; }
+      .nav-meta { color: rgba(255, 253, 247, .74); font-family: var(--mono); font-size: 11px; letter-spacing: .02em; }
+      .nav-reserve {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid var(--lime);
+        background: var(--lime);
+        color: var(--ink);
+        padding: 11px 16px;
+        font-size: 12px;
+        font-weight: 800;
+        transition: background .2s ease, transform .2s ease;
+      }
+      .nav-reserve:hover { background: #eff98b; transform: translateY(-2px); }
+      .icon { display: inline-block; width: 15px; height: 15px; position: relative; flex: 0 0 auto; }
+      .icon-arrow-up-right::before { content: "↗"; position: absolute; inset: -5px 0 0; font-size: 21px; line-height: 1; }
+      .icon-arrow-down::before { content: "↓"; position: absolute; inset: -4px 0 0; font-size: 19px; line-height: 1; }
+      .icon-menu::before { content: "☰"; position: absolute; inset: -3px 0 0; font-size: 18px; line-height: 1; }
+      .icon-x::before { content: "×"; position: absolute; inset: -5px 0 0; font-size: 25px; line-height: 1; }
+      .menu-toggle { display: none; background: transparent; color: #fff; border: 0; padding: 8px; }
+
+      .hero {
+        min-height: 760px;
+        height: 91vh;
+        max-height: 900px;
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        overflow: hidden;
+        color: #fffdf7;
+        background: #28544c;
+      }
+      .hero-image {
+        position: absolute;
+        inset: 0;
+        background-image: url("assets/hero.jpg");
+        background-size: cover;
+        background-position: center 44%;
+      }
+      .hero-image::after { content: ""; position: absolute; inset: 0; background: rgba(18, 48, 44, .52); }
+      .hero-content {
+        width: min(1260px, calc(100% - 72px));
+        margin: 0 auto;
+        padding: 0 0 88px;
+        position: relative;
+        z-index: 1;
+      }
+      .eyebrow { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+      .eyebrow::before { content: ""; width: 36px; height: 1px; background: var(--lime); }
+      .hero h1 { max-width: 760px; margin: 20px 0 20px; font-family: var(--serif); font-size: clamp(48px, 7vw, 94px); line-height: 1.08; letter-spacing: .01em; font-weight: 600; }
+      .hero h1 em { color: var(--lime); font-style: normal; }
+      .hero-bottom { display: flex; justify-content: space-between; align-items: end; gap: 30px; }
+      .hero-copy { max-width: 420px; color: rgba(255, 253, 247, .84); font-size: 15px; }
+      .hero-copy p { margin: 0; }
+      .hero-cta { display: inline-flex; align-items: center; gap: 12px; color: var(--ink); background: var(--lime); padding: 17px 22px; font-weight: 800; font-size: 13px; transition: transform .2s ease, background .2s ease; }
+      .hero-cta:hover { transform: translateY(-3px); background: #eff98b; }
+      .hero-aside { display: flex; align-items: center; gap: 16px; color: rgba(255, 253, 247, .72); font-family: var(--mono); font-size: 11px; }
+      .scroll-cue { width: 34px; height: 54px; border: 1px solid rgba(255,255,255,.4); display: grid; place-items: center; }
+      .scroll-cue i { animation: nudge 1.8s ease-in-out infinite; }
+      @keyframes nudge { 0%, 100% { transform: translateY(-4px); } 50% { transform: translateY(4px); } }
+
+      .ticker { height: 56px; display: flex; align-items: center; overflow: hidden; background: var(--lime); color: var(--ink); }
+      .ticker-track { display: flex; align-items: center; gap: 32px; width: max-content; white-space: nowrap; animation: ticker 24s linear infinite; font-family: var(--mono); font-size: 12px; letter-spacing: .07em; }
+      .ticker-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--coral); }
+      @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+      .section { padding: 112px 0; }
+      .container { width: min(1120px, calc(100% - 72px)); margin: 0 auto; }
+      .section-head { display: flex; justify-content: space-between; align-items: end; gap: 30px; margin-bottom: 54px; }
+      .section-kicker { margin: 0 0 14px; color: var(--coral); font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+      .section h2 { margin: 0; font-family: var(--serif); font-size: clamp(36px, 4.5vw, 62px); line-height: 1.15; font-weight: 600; letter-spacing: .01em; }
+      .section-intro { max-width: 315px; margin: 0; color: var(--ink-soft); font-size: 14px; }
+
+      .menu-section { background: var(--paper); }
+      .menu-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+      .tab { border: 1px solid var(--line); background: transparent; color: var(--ink-soft); padding: 9px 14px; font-family: var(--mono); font-size: 11px; transition: all .2s ease; }
+      .tab:hover, .tab.active { color: var(--ink); border-color: var(--ink); background: var(--lime); }
+      .dish-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+      .dish-card { min-width: 0; }
+      .dish-image-wrap { position: relative; aspect-ratio: 1 / 1.08; overflow: hidden; background: #e7e4d9; }
+      .dish-image-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform .45s ease; }
+      .dish-card:hover img { transform: scale(1.04); }
+      .dish-tag { position: absolute; top: 14px; left: 14px; padding: 6px 9px; background: var(--coral); color: #fff; font-family: var(--mono); font-size: 10px; letter-spacing: .04em; }
+      .dish-info { display: flex; justify-content: space-between; gap: 15px; padding: 17px 0 0; border-bottom: 1px solid var(--line); padding-bottom: 18px; }
+      .dish-name { margin: 0; font-family: var(--serif); font-size: 21px; font-weight: 600; }
+      .dish-desc { margin: 5px 0 0; color: var(--ink-soft); font-size: 12px; }
+      .dish-price { white-space: nowrap; font-family: var(--mono); font-size: 12px; }
+      .dish-card.is-hidden { display: none; }
+      .menu-note { display: flex; justify-content: space-between; align-items: center; margin-top: 34px; color: var(--ink-soft); font-size: 12px; }
+      .menu-note a { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); font-weight: 800; }
+
+      .story-section { background: var(--coral); color: #fffdf7; }
+      .story-layout { display: grid; grid-template-columns: .84fr 1.16fr; align-items: center; gap: 86px; }
+      .story-image { aspect-ratio: 1 / 1.13; overflow: hidden; }
+      .story-image img { width: 100%; height: 100%; object-fit: cover; }
+      .story-section .section-kicker { color: var(--lime); }
+      .story-section h2 { max-width: 530px; }
+      .story-copy { margin: 28px 0 36px; max-width: 480px; color: rgba(255, 253, 247, .84); font-size: 15px; }
+      .story-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding-top: 24px; border-top: 1px solid rgba(255, 253, 247, .36); }
+      .stat-number { display: block; color: var(--lime); font-family: var(--serif); font-size: 32px; }
+      .stat-label { display: block; margin-top: 3px; color: rgba(255, 253, 247, .72); font-size: 11px; }
+
+      .visit-section { background: var(--cream); }
+      .visit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+      .visit-details { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 20px; margin-top: 42px; }
+      .detail { border-top: 1px solid var(--line); padding-top: 14px; }
+      .detail-label { display: block; margin-bottom: 8px; color: var(--coral); font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+      .detail p { margin: 0; font-size: 14px; }
+      .booking-panel { padding: 30px; background: var(--ink); color: #fffdf7; }
+      .booking-top { display: flex; justify-content: space-between; align-items: start; padding-bottom: 25px; border-bottom: 1px solid rgba(255, 253, 247, .2); }
+      .booking-top h3 { margin: 0; font-family: var(--serif); font-size: 27px; font-weight: 600; }
+      .booking-top span { color: var(--lime); font-family: var(--mono); font-size: 11px; }
+      .booking-form { display: grid; gap: 14px; padding-top: 25px; }
+      .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .field { display: grid; gap: 7px; }
+      .field label { color: rgba(255, 253, 247, .62); font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+      .field input, .field select { width: 100%; border: 1px solid rgba(255, 253, 247, .27); border-radius: 0; outline: none; background: transparent; color: #fffdf7; padding: 12px; font-size: 13px; }
+      .field input:focus, .field select:focus { border-color: var(--lime); }
+      .field select option { color: var(--ink); }
+      .booking-submit { display: flex; justify-content: center; align-items: center; gap: 10px; border: 0; margin-top: 10px; padding: 15px; background: var(--lime); color: var(--ink); font-weight: 800; font-size: 13px; transition: background .2s ease; }
+      .booking-submit:hover { background: #eff98b; }
+      .booking-foot { color: rgba(255, 253, 247, .52); text-align: center; font-size: 11px; }
+
+      footer { padding: 28px 0; background: var(--ink); color: rgba(255, 253, 247, .65); font-size: 11px; }
+      .footer-inner { width: min(1120px, calc(100% - 72px)); margin: 0 auto; display: flex; justify-content: space-between; gap: 20px; }
+      .footer-brand { color: #fffdf7; font-family: var(--serif); font-weight: 600; }
+      .footer-links { display: flex; gap: 24px; font-family: var(--mono); }
+
+      .modal-backdrop { position: fixed; z-index: 20; inset: 0; display: grid; place-items: center; padding: 24px; background: rgba(18, 48, 44, .67); opacity: 0; pointer-events: none; transition: opacity .2s ease; }
+      .modal-backdrop.open { opacity: 1; pointer-events: auto; }
+      .modal { width: min(450px, 100%); position: relative; padding: 32px; background: var(--paper); transform: translateY(12px); transition: transform .2s ease; }
+      .modal-backdrop.open .modal { transform: translateY(0); }
+      .modal h3 { margin: 0 0 9px; font-family: var(--serif); font-size: 30px; }
+      .modal p { margin: 0 0 24px; color: var(--ink-soft); font-size: 13px; }
+      .modal-close { position: absolute; top: 18px; right: 18px; border: 0; background: transparent; color: var(--ink); padding: 5px; }
+      .modal .field input, .modal .field select { border-color: var(--line); color: var(--ink); }
+      .modal .field select option { color: var(--ink); }
+      .modal .booking-form { padding-top: 0; }
+      .modal .booking-submit { width: 100%; }
+      .success { display: none; padding: 22px 0 8px; color: var(--ink); }
+      .success.show { display: block; }
+      .success strong { display: block; margin-bottom: 8px; font-family: var(--serif); font-size: 22px; }
+
+      @media (max-width: 800px) {
+        .nav, .hero-content, .container, .footer-inner { width: min(100% - 40px, 620px); }
+        .nav { height: 72px; }
+        .nav-links, .nav-meta { display: none; }
+        .menu-toggle { display: block; }
+        .nav-actions { gap: 8px; }
+        .hero { min-height: 680px; height: 88vh; }
+        .hero-content { padding-bottom: 54px; }
+        .hero h1 { margin-top: 17px; font-size: clamp(48px, 14vw, 74px); }
+        .hero-bottom { align-items: start; flex-direction: column; }
+        .hero-aside { display: none; }
+        .section { padding: 76px 0; }
+        .section-head { align-items: start; flex-direction: column; gap: 22px; margin-bottom: 36px; }
+        .dish-grid { grid-template-columns: 1fr 1fr; gap: 26px 16px; }
+        .dish-name { font-size: 17px; }
+        .dish-desc { font-size: 11px; }
+        .dish-price { font-size: 10px; }
+        .menu-note { align-items: start; flex-direction: column; gap: 18px; }
+        .story-layout, .visit-grid { grid-template-columns: 1fr; gap: 40px; }
+        .story-image { max-width: 500px; }
+        .visit-details { margin-top: 0; }
+        .booking-panel { padding: 24px 20px; }
+      }
+      @media (max-width: 450px) {
+        .brand { font-size: 19px; }
+        .nav-reserve { padding: 10px 11px; font-size: 11px; }
+        .hero { min-height: 640px; }
+        .hero h1 { font-size: 52px; }
+        .dish-grid { grid-template-columns: 1fr; gap: 30px; }
+        .dish-image-wrap { aspect-ratio: 1 / .88; }
+        .form-row, .visit-details { grid-template-columns: 1fr; }
+        .story-stats { gap: 12px; }
+        .stat-number { font-size: 25px; }
+        .footer-inner { align-items: start; flex-direction: column; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav" aria-label="主导航">
+        <a class="brand" href="#top" aria-label="南枝食集首页"><span class="brand-mark">南</span>南枝食集</a>
+        <div class="nav-links">
+          <a href="#menu">当季菜单</a>
+          <a href="#story">关于南枝</a>
+          <a href="#visit">到店信息</a>
+        </div>
+        <div class="nav-actions">
+          <span class="nav-meta">广州 · 珠江新城</span>
+          <button class="nav-reserve open-booking" type="button">预约座位 <i class="icon icon-arrow-up-right" aria-hidden="true"></i></button>
+          <button class="menu-toggle" type="button" aria-label="打开菜单"><i class="icon icon-menu" aria-hidden="true"></i></button>
+        </div>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-image" aria-hidden="true"></div>
+        <div class="hero-content">
+          <p class="eyebrow">Seasonal kitchen · Est. 2018</p>
+          <h1 id="hero-title">南方风物，<br /><em>当代表达。</em></h1>
+          <div class="hero-bottom">
+            <div class="hero-copy"><p>从一味荔枝、一道老火汤开始，把岭南的鲜活与克制，放进每一张餐桌。</p></div>
+            <a class="hero-cta" href="#menu">探索当季菜单 <i class="icon icon-arrow-down" aria-hidden="true"></i></a>
+            <div class="hero-aside"><span class="scroll-cue"><i class="icon icon-arrow-down" aria-hidden="true"></i></span><span>向下探索<br />SCROLL TO DISCOVER</span></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="ticker" aria-label="餐厅信息">
+        <div class="ticker-track"><span>岭南食材 · 当日直送</span><span class="ticker-dot"></span><span>午市 11:30 — 14:00</span><span class="ticker-dot"></span><span>晚市 17:30 — 22:00</span><span class="ticker-dot"></span><span>岭南食材 · 当日直送</span><span class="ticker-dot"></span><span>午市 11:30 — 14:00</span><span class="ticker-dot"></span><span>晚市 17:30 — 22:00</span><span class="ticker-dot"></span></div>
+      </div>
+
+      <section class="section menu-section" id="menu" aria-labelledby="menu-title">
+        <div class="container">
+          <div class="section-head">
+            <div><p class="section-kicker">01 / From the kitchen</p><h2 id="menu-title">这一季，<br />吃点新鲜的。</h2></div>
+            <div><p class="section-intro">菜单跟着天气走。我们每天从岭南各地挑选食材，只留下此刻最好的味道。</p><div class="menu-tabs" role="tablist" aria-label="菜单分类" style="margin-top: 20px"><button class="tab active" data-filter="all" role="tab" type="button">全部</button><button class="tab" data-filter="small" role="tab" type="button">前菜</button><button class="tab" data-filter="main" role="tab" type="button">主菜</button><button class="tab" data-filter="sweet" role="tab" type="button">甜品</button></div></div>
+          </div>
+          <div class="dish-grid">
+            <article class="dish-card" data-category="small"><div class="dish-image-wrap"><img src="assets/salad.jpg" alt="青梅脆笋沙拉" loading="lazy" /><span class="dish-tag">季节前菜</span></div><div class="dish-info"><div><h3 class="dish-name">青梅脆笋沙拉</h3><p class="dish-desc">春笋 · 青梅 · 紫苏油</p></div><span class="dish-price">¥ 68</span></div></article>
+            <article class="dish-card" data-category="main"><div class="dish-image-wrap"><img src="assets/hero.jpg" alt="炭火荔枝木烧鸭" loading="lazy" /><span class="dish-tag">主厨推荐</span></div><div class="dish-info"><div><h3 class="dish-name">荔枝木烧鸭</h3><p class="dish-desc">二十八日龄 · 荔枝木 · 陈皮</p></div><span class="dish-price">¥ 228</span></div></article>
+            <article class="dish-card" data-category="main"><div class="dish-image-wrap"><img src="assets/noodles.jpg" alt="虾籽竹笙捞面" loading="lazy" /><span class="dish-tag">每日限量</span></div><div class="dish-info"><div><h3 class="dish-name">虾籽竹笙捞面</h3><p class="dish-desc">手工竹升面 · 海虾籽 · 韭黄</p></div><span class="dish-price">¥ 88</span></div></article>
+            <article class="dish-card" data-category="main"><div class="dish-image-wrap"><img src="assets/salad.jpg" alt="砂锅老火汤" loading="lazy" /><span class="dish-tag">慢火四小时</span></div><div class="dish-info"><div><h3 class="dish-name">鲍鱼花胶老火汤</h3><p class="dish-desc">本地走地鸡 · 花胶 · 淮山</p></div><span class="dish-price">¥ 128</span></div></article>
+            <article class="dish-card" data-category="small"><div class="dish-image-wrap"><img src="assets/tomato.jpg" alt="盐焗小番茄" loading="lazy" /><span class="dish-tag">清爽小食</span></div><div class="dish-info"><div><h3 class="dish-name">盐焗小番茄</h3><p class="dish-desc">潮汕小番茄 · 海盐 · 柚子醋</p></div><span class="dish-price">¥ 42</span></div></article>
+            <article class="dish-card" data-category="sweet"><div class="dish-image-wrap"><img src="assets/dessert.jpg" alt="陈皮流心奶黄" loading="lazy" /><span class="dish-tag">饭后甜点</span></div><div class="dish-info"><div><h3 class="dish-name">陈皮流心奶黄</h3><p class="dish-desc">新会陈皮 · 咸蛋黄 · 椰乳</p></div><span class="dish-price">¥ 48</span></div></article>
+          </div>
+          <div class="menu-note"><span>完整菜单会根据当日食材微调 · 请以店内为准</span><a href="#visit">查看到店信息 <i class="icon icon-arrow-up-right" aria-hidden="true"></i></a></div>
+        </div>
+      </section>
+
+      <section class="section story-section" id="story" aria-labelledby="story-title">
+        <div class="container story-layout">
+          <div class="story-image"><img src="assets/story.jpg" alt="南枝食集餐厅内景" loading="lazy" /></div>
+          <div><p class="section-kicker">02 / Our table</p><h2 id="story-title">好好吃饭，<br />也好好生活。</h2><p class="story-copy">南枝不是一间怀旧餐厅。我们从熟悉的南方味道出发，用更轻盈的方式重新讲述它。这里有一张给朋友、家人和自己留的桌子，也有一份不赶时间的心意。</p><div class="story-stats"><div><span class="stat-number">06</span><span class="stat-label">年 · 一直在广州</span></div><div><span class="stat-number">32</span><span class="stat-label">位 · 每日用餐席位</span></div><div><span class="stat-number">100%</span><span class="stat-label">当季 · 新鲜食材</span></div></div></div>
+        </div>
+      </section>
+
+      <section class="section visit-section" id="visit" aria-labelledby="visit-title">
+        <div class="container visit-grid">
+          <div><p class="section-kicker">03 / Come by</p><h2 id="visit-title">留一晚，<br />给喜欢的人。</h2><div class="visit-details"><div class="detail"><span class="detail-label">地址 / Address</span><p>广州市天河区<br />珠江新城兴盛路 12 号</p></div><div class="detail"><span class="detail-label">营业时间 / Hours</span><p>周一至周日<br />11:30 — 22:00</p></div><div class="detail"><span class="detail-label">交通 / Getting here</span><p>地铁 5 号线<br />猎德站 B 出口步行 8 分钟</p></div><div class="detail"><span class="detail-label">联系 / Contact</span><p>020 3888 2018<br />hello@nanzhi.house</p></div></div></div>
+          <div class="booking-panel"><div class="booking-top"><h3>预约一张桌子</h3><span>BOOK A TABLE</span></div><form class="booking-form" id="quick-booking"><div class="form-row"><div class="field"><label for="date">日期</label><input id="date" type="date" required /></div><div class="field"><label for="time">时间</label><select id="time" required><option value="">选择时间</option><option>11:30</option><option>12:30</option><option>18:00</option><option>19:30</option><option>20:30</option></select></div></div><div class="form-row"><div class="field"><label for="guests">人数</label><select id="guests" required><option value="">选择人数</option><option>2 位</option><option>3 位</option><option>4 位</option><option>5-8 位</option></select></div><div class="field"><label for="phone">手机号</label><input id="phone" type="tel" placeholder="方便我们联系你" required /></div></div><button class="booking-submit" type="submit">确认预约 <i class="icon icon-arrow-up-right" aria-hidden="true"></i></button><span class="booking-foot">提交后我们会在 30 分钟内与您确认</span></form></div>
+        </div>
+      </section>
+    </main>
+
+    <footer><div class="footer-inner"><span class="footer-brand">南枝食集 · NANZHI HOUSE</span><div class="footer-links"><a href="#menu">菜单</a><a href="#story">故事</a><a href="#visit">联系</a><span>© 2024</span></div></div></footer>
+
+    <div class="modal-backdrop" id="booking-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal"><button class="modal-close" type="button" aria-label="关闭预约窗口"><i class="icon icon-x" aria-hidden="true"></i></button><div class="modal-content"><h3 id="modal-title">预约一张桌子</h3><p>告诉我们你的用餐计划，南枝会为你留好位置。</p><form class="booking-form" id="modal-booking"><div class="form-row"><div class="field"><label for="modal-date">日期</label><input id="modal-date" type="date" required /></div><div class="field"><label for="modal-time">时间</label><select id="modal-time" required><option value="">选择时间</option><option>11:30</option><option>12:30</option><option>18:00</option><option>19:30</option><option>20:30</option></select></div></div><div class="field"><label for="modal-guests">人数</label><select id="modal-guests" required><option value="">选择人数</option><option>2 位</option><option>3 位</option><option>4 位</option><option>5-8 位</option></select></div><div class="field"><label for="modal-phone">手机号</label><input id="modal-phone" type="tel" placeholder="方便我们联系你" required /></div><button class="booking-submit" type="submit">提交预约 <i class="icon icon-arrow-up-right" aria-hidden="true"></i></button></form></div><div class="success" id="booking-success"><strong>收到你的预约了。</strong><span>我们会尽快致电确认细节，期待在南枝见到你。</span></div></div></div>
+
+    <script>
+      const modal = document.querySelector('#booking-modal');
+      const openButtons = document.querySelectorAll('.open-booking');
+      const closeModal = () => { modal.classList.remove('open'); document.body.classList.remove('modal-open'); };
+      openButtons.forEach((button) => button.addEventListener('click', () => { modal.classList.add('open'); document.body.classList.add('modal-open'); document.querySelector('#modal-date').focus(); }));
+      document.querySelector('.modal-close').addEventListener('click', closeModal);
+      modal.addEventListener('click', (event) => { if (event.target === modal) closeModal(); });
+      document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeModal(); });
+
+      document.querySelectorAll('.tab').forEach((tab) => tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach((item) => item.classList.remove('active'));
+        tab.classList.add('active');
+        const filter = tab.dataset.filter;
+        document.querySelectorAll('.dish-card').forEach((card) => card.classList.toggle('is-hidden', filter !== 'all' && card.dataset.category !== filter));
+      }));
+
+      const dateInputs = document.querySelectorAll('input[type="date"]');
+      const today = new Date().toISOString().split('T')[0];
+      dateInputs.forEach((input) => { input.min = today; });
+
+      const handleBooking = (event) => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        if (!form.checkValidity()) { form.reportValidity(); return; }
+        if (form.id === 'modal-booking') {
+          form.parentElement.style.display = 'none';
+          document.querySelector('#booking-success').classList.add('show');
+        } else {
+          const button = form.querySelector('.booking-submit');
+          const original = button.innerHTML;
+          button.innerHTML = '已收到预约请求 <span aria-hidden="true">✓</span>';
+          button.disabled = true;
+          setTimeout(() => { button.innerHTML = original; button.disabled = false; form.reset(); }, 3200);
+        }
+      };
+      document.querySelector('#modal-booking').addEventListener('submit', handleBooking);
+      document.querySelector('#quick-booking').addEventListener('submit', handleBooking);
+    </script>
+  </body>
+</html>
